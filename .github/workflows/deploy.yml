@@ -1,0 +1,33 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate HTML
+        run: |
+          echo "Kiểm tra file index.html..."
+          if [ -f "index.html" ]; then
+            echo "Tìm thấy file index.html!"
+            echo "Kích thước file: $(wc -c < index.html) bytes"
+          else
+            echo "LỖI: Không tìm thấy file index.html!"
+            exit 1
+          fi
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
+          commit_message: "Auto-deploy from CI pipeline"
